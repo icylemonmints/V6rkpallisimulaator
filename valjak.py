@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
 
         self.scene.addItem(plats)
 
-        kolmmeetrit = QGraphicsLineItem(25, 167, 475, 167)
+        kolmmeetrit = QGraphicsLineItem(0.5*S, 0.5*S + 3*S, 9.5*S, 0.5*S + 3*S)
         kolmmeetrit.setPen(QPen(QColor("white"), 3))
 
         self.scene.addItem(kolmmeetrit)
