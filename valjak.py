@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
 
     def joonista_mangija(self, silt, positsioon):
         S = 50  # kas peaks tegema S = self.S ning muutma ka initis ära?
-        r = 0.5 * S  #ringi raadius
+        r = 0.5 * S  # ringi raadius
         x, y = asetused[positsioon]
 
         ring = QGraphicsEllipseItem(-r, -r, 2*r, 2*r)
