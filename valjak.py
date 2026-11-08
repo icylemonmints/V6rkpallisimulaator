@@ -8,9 +8,10 @@ from PySide6.QtGui import QBrush, QPen, QColor
 from PySide6.QtCore import Qt
 
 asetused = {
-    4: (1.5, 2), 3: (4.5, 2), 2: (7, 1.5),
+    4: (1.5, 2), 3: (4.5, 2), 2: (7.5, 2),
     5: (1.5, 6), 6: (4.5, 6), 1: (7.5, 6)
 }
+rollid = ["S", "T", "N", "D", "T", "N"]
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -35,7 +36,7 @@ class MainWindow(QMainWindow):
 
         self.scene.addItem(kolmmeetrit)
 
-        self.players = [self.joonista_mangija(str(n), n) for n in range(1, 7)]
+        self.players = [self.joonista_mangija(str(rollid[n-1]), n) for n in range(1, 7)]
 
     def joonista_mangija(self, silt, positsioon):
         S = 50  # kas peaks tegema S = self.S ning muutma ka initis ära?
