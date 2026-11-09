@@ -65,6 +65,9 @@ class RectangleWidget(QWidget):
     def muuda_asetust(self):
         print("Liigub edasi")
 
+    def vastuvotu_asendisse(self):
+        print("Läheb vastuvõtma")
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -74,7 +77,8 @@ class MainWindow(QMainWindow):
         self.juhtimine = controls(self.valjak)
         self.juhtimine.setFixedWidth(200)
 
-        self.juhtimine.liikumine.connect(self.valjak.muuda_asetust)
+        self.juhtimine.edasi.connect(self.valjak.muuda_asetust)
+        self.juhtimine.vastuvottu.connect(self.valjak.vastuvotu_asendisse)
 
         näidatavWidget = QWidget()
         layout = QHBoxLayout(näidatavWidget)
@@ -85,16 +89,21 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(näidatavWidget)
 
 class controls(QWidget):
-    liikumine = Signal()
+    edasi = Signal()
+    vastuvottu = Signal()
     def __init__(self, valjak):
         super().__init__()
         self.valjak = valjak 
         layout = QVBoxLayout(self)
 
         self.roteeru = QPushButton("Rotatsioon edasi")
-        self.roteeru.clicked.connect(self.liikumine.emit)
+        self.roteeru.clicked.connect(self.edasi.emit)
+
+        self.vastuvott = QPushButton("Vastuvõtu asendisse")
+        self.vastuvott.clicked.connect(self.vastuvottu.emit)
 
         layout.addWidget(self.roteeru)
+        layout.addWidget(self.vastuvott)
         self.setLayout(layout)
 
     
