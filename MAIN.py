@@ -3,10 +3,13 @@ import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow,
     QGraphicsScene, QGraphicsView,
-    QGraphicsRectItem, QGraphicsLineItem, QGraphicsEllipseItem, QGraphicsSimpleTextItem
+    QGraphicsRectItem, QGraphicsLineItem, QGraphicsEllipseItem, QGraphicsSimpleTextItem,
+    QHBoxLayout, QVBoxLayout,
+    QWidget, QPushButton
 )
 from PySide6.QtGui import QBrush, QPen, QColor
 from PySide6.QtCore import Qt
+from PySide6.QtCore import Signal
 
 asetused = {
     4: (1.5, 2), 3: (4.5, 2), 2: (7.5, 2),
@@ -14,31 +17,34 @@ asetused = {
 }
 rollid = ["S", "T", "N", "D", "T", "N"]
 
-class MainWindow(QMainWindow):
+class RectangleWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Võrkpallirotatsioonide simulaator")
-
         S = 50
-        self.scene = QGraphicsScene(self)
-        self.scene.setSceneRect(0, 0, 10*S, 10*S)
-
+        layout = QHBoxLayout()
+        
+        self.scene = QGraphicsScene(0, 0, 10*S, 10*S)
         self.view = QGraphicsView(self.scene)
-        self.setCentralWidget(self.view)
+        self.view.setFixedSize(10*S + 2*S, 10*S + 2*S)
+        
+        #loon väljakuala
+        self.plats = QGraphicsRectItem(0.5*S, 0.5*S, 9*S, 9*S)
+        self.plats.setBrush(QBrush(QColor("#cb784f")))
+        self.plats.setPen(QPen(Qt.NoPen))
 
-        plats = QGraphicsRectItem(0.5*S, 0.5*S, 9*S, 9*S)
-        plats.setBrush(QBrush(QColor("#cb784f")))
-        plats.setPen(QPen(Qt.NoPen))
+        self.scene.addItem(self.plats)
 
-        self.scene.addItem(plats)
-
+        # kolmemeetrijoon
         kolmmeetrit = QGraphicsLineItem(0.5*S, 0.5*S + 3*S, 9.5*S, 0.5*S + 3*S)
         kolmmeetrit.setPen(QPen(QColor("white"), 3))
-
+        
         self.scene.addItem(kolmmeetrit)
 
         self.players = [self.joonista_mangija(str(rollid[n-1]), n) for n in range(1, 7)]
 
+        layout.addWidget(self.view)
+        self.setLayout(layout)
+        
     def joonista_mangija(self, silt, positsioon):
         S = 50  # kas peaks tegema S = self.S ning muutma ka initis ära?
         r = 0.5 * S  # ringi raadius
@@ -55,6 +61,43 @@ class MainWindow(QMainWindow):
 
         self.scene.addItem(ring)
         return ring
+
+    def muuda_asetust(self):
+        print("Liigub edasi")
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Võrkpallirotatsioonide simulaator")
+
+        self.valjak = RectangleWidget()  
+        self.juhtimine = controls(self.valjak)
+        self.juhtimine.setFixedWidth(200)
+
+        self.juhtimine.liikumine.connect(self.valjak.muuda_asetust)
+
+        näidatavWidget = QWidget()
+        layout = QHBoxLayout(näidatavWidget)
+        layout.addStretch(1)
+        layout.addWidget(self.valjak,0)
+        layout.addWidget(self.juhtimine)
+        layout.addStretch(1)
+        self.setCentralWidget(näidatavWidget)
+
+class controls(QWidget):
+    liikumine = Signal()
+    def __init__(self, valjak):
+        super().__init__()
+        self.valjak = valjak 
+        layout = QVBoxLayout(self)
+
+        self.roteeru = QPushButton("Rotatsioon edasi")
+        self.roteeru.clicked.connect(self.liikumine.emit)
+
+        layout.addWidget(self.roteeru)
+        self.setLayout(layout)
+
+    
 
 
 app = QApplication(sys.argv)
