@@ -1,4 +1,4 @@
-# See on projekti põhifail. See kood käivitab hetkel tühja akna.
+# See on projekti põhifail.
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow,
