@@ -18,52 +18,59 @@ asetused = {
 rollid = ["S", "T", "N", "D", "T", "N"]
 
 class RectangleWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        S = 50
-        layout = QHBoxLayout()
+    def __init__(self): # siin meetodis on kõik asjad, mille siia klassi loodud objektid pärivad
+        super().__init__()  # RectangleWidget pärib oma ülemklassi QWidgeti __init__() meetodi
+        self.S = 50
+        self.nihe = 0
         
-        self.scene = QGraphicsScene(0, 0, 10*S, 10*S)
-        self.view = QGraphicsView(self.scene)
-        self.view.setFixedSize(10*S + 2*S, 10*S + 2*S)
+        self.scene = QGraphicsScene(0, 0, 10*self.S, 10*self.S)   # koht, kus asuvad objektid
+        self.view = QGraphicsView(self.scene)   # aken, mille kaudu kasutaja neid objekte näeb
+        self.view.setFixedSize(10*self.S + 2*self.S, 10*self.S + 2*self.S)
         
-        #loon väljakuala
-        self.plats = QGraphicsRectItem(0.5*S, 0.5*S, 9*S, 9*S)
+        # väljaku loomine
+        self.plats = QGraphicsRectItem(0.5*self.S, 0.5*self.S, 9*self.S, 9*self.S)
         self.plats.setBrush(QBrush(QColor("#cb784f")))
         self.plats.setPen(QPen(Qt.NoPen))
-
         self.scene.addItem(self.plats)
 
         # kolmemeetrijoon
-        kolmmeetrit = QGraphicsLineItem(0.5*S, 0.5*S + 3*S, 9.5*S, 0.5*S + 3*S)
+        kolmmeetrit = QGraphicsLineItem(0.5*self.S, 0.5*self.S + 3*self.S, 9.5*self.S, 0.5*self.S + 3*self.S)
         kolmmeetrit.setPen(QPen(QColor("white"), 3))
-        
         self.scene.addItem(kolmmeetrit)
 
-        self.players = [self.joonista_mangija(str(rollid[n-1]), n) for n in range(1, 7)]
+        # mängijad kogutakse järjendisse, et oleks hiljem hea neid liigutada
+        self.mangijad = []
+        for n in range(1, 7):
+            roll = rollid[n-1]
+            mangija = self.joonista_mangija(roll, n)
+            self.mangijad.append(mangija)
 
+        layout = QHBoxLayout()
         layout.addWidget(self.view)
         self.setLayout(layout)
         
     def joonista_mangija(self, silt, positsioon):
-        S = 50  # kas peaks tegema S = self.S ning muutma ka initis ära?
+        S = 50
         r = 0.5 * S  # ringi raadius
         x, y = asetused[positsioon]
 
         ring = QGraphicsEllipseItem(-r, -r, 2*r, 2*r)
         ring.setBrush(QBrush(QColor("#FFFFFF")))
         ring.setPen(QPen(Qt.PenStyle.NoPen))
-        ring.setPos((0.5 + x)*S, (0.5 + y)*S)
+        ring.setPos((0.5 + x)*S, (0.5 + y)*S)   # paneb paika mängija (ehk ringi keskpaiga) koordinaadid
 
-        tekst = QGraphicsSimpleTextItem(silt, ring)     # on ringi "laps", seega käib ringiga kaasas
-        box = tekst.boundingRect()
-        tekst.setPos(-box.width() / 2, -box.height() / 2)  # paneb teksti ringi keskele kuidagi
+        tekst = QGraphicsSimpleTextItem(silt, ring)     # on ringi alamobjekt, seega käib ringiga kaasas
+        kast = tekst.boundingRect()  # teksti ümber tekib mõtteline ristkülik, muutuja "kast" kirjeldab selle mõõtmeid ja koordinaate ringi suhtes
+        tekst.setPos(-kast.width() / 2, -kast.height() / 2)  # seab mõttelise kasti ülemise vasaku nurga koordinaadid nii, et tekst ise jääks ringi keskele
 
         self.scene.addItem(ring)
         return ring
 
     def muuda_asetust(self):
-        print("Liigub edasi")
+        self.nihe = (self.nihe+1) % 6
+        for i in range(6):
+            x, y = asetused[(i+6-self.nihe)%6+1]
+            self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
 
     def vastuvotu_asendisse(self):
         print("Läheb vastuvõtma")
@@ -105,9 +112,6 @@ class controls(QWidget):
         layout.addWidget(self.roteeru)
         layout.addWidget(self.vastuvott)
         self.setLayout(layout)
-
-    
-
 
 app = QApplication(sys.argv)
 window = MainWindow()
