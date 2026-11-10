@@ -116,10 +116,6 @@ class RectangleWidget(QWidget):
                 self.mangijad[3].setPos(self.S*(0.5 + 3), self.S*(0.5 + 8))
                 self.mangijad[4].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 6))
                 self.mangijad[5].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
-            case _:
-                pass
-        
-        print("Läheb vastuvõtma")
 
 class MainWindow(QMainWindow):
     def __init__(self):
