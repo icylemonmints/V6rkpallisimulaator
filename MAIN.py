@@ -15,7 +15,7 @@ asetused = {
     4: (1.5, 2), 3: (4.5, 2), 2: (7.5, 2),
     5: (1.5, 6), 6: (4.5, 6), 1: (7.5, 6)
 }
-rollid = ["S", "T", "N", "D", "T", "N"]
+rollid = ["S", "N", "T", "D", "N", "T"]
 
 class RectangleWidget(QWidget):
     def __init__(self): # siin meetodis on kõik asjad, mille siia klassi loodud objektid pärivad
@@ -51,7 +51,7 @@ class RectangleWidget(QWidget):
         
     def joonista_mangija(self, silt, positsioon):
         S = 50
-        r = 0.5 * S  # ringi raadius
+        r = 0.6 * S  # ringi raadius
         x, y = asetused[positsioon]
 
         ring = QGraphicsEllipseItem(-r, -r, 2*r, 2*r)
@@ -73,6 +73,52 @@ class RectangleWidget(QWidget):
             self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
 
     def vastuvotu_asendisse(self):
+        match self.nihe:
+            case 0:
+                self.mangijad[0].setPos(self.S*(0.5 + 8.2), self.S*(0.5 + 5.5))
+                self.mangijad[1].setPos(self.S*(0.5 + 7), self.S*(0.5 + 5))
+                self.mangijad[2].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 2))
+                self.mangijad[3].setPos(self.S*(0.5 + 1), self.S*(0.5 + 3))
+                self.mangijad[4].setPos(self.S*(0.5 + 2), self.S*(0.5 + 6))
+                self.mangijad[5].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 7))
+            case 1:
+                self.mangijad[0].setPos(self.S*(0.5 + 4.8), self.S*(0.5 + 2))
+                self.mangijad[1].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
+                self.mangijad[2].setPos(self.S*(0.5 + 7), self.S*(0.5 + 3))
+                self.mangijad[3].setPos(self.S*(0.5 + 6), self.S*(0.5 + 1))
+                self.mangijad[4].setPos(self.S*(0.5 + 1.5), self.S*(0.5 + 5))
+                self.mangijad[5].setPos(self.S*(0.5 + 4.2), self.S*(0.5 + 7.5))
+            case 2:
+                self.mangijad[0].setPos(self.S*(0.5 + 1.5), self.S*(0.5 + 2.8))
+                self.mangijad[1].setPos(self.S*(0.5 + 4), self.S*(0.5 + 7))
+                self.mangijad[2].setPos(self.S*(0.5 + 6), self.S*(0.5 + 6.5))
+                self.mangijad[3].setPos(self.S*(0.5 + 8), self.S*(0.5 + 5))
+                self.mangijad[4].setPos(self.S*(0.5 + 2), self.S*(0.5 + 5))
+                self.mangijad[5].setPos(self.S*(0.5 + 1), self.S*(0.5 + 1))
+            case 3:
+                self.mangijad[0].setPos(self.S*(0.5 + 1), self.S*(0.5 + 1))
+                self.mangijad[1].setPos(self.S*(0.5 + 3), self.S*(0.5 + 6.2))
+                self.mangijad[2].setPos(self.S*(0.5 + 6), self.S*(0.5 + 6.5))
+                self.mangijad[3].setPos(self.S*(0.5 + 8), self.S*(0.5 + 5))
+                self.mangijad[4].setPos(self.S*(0.5 + 2), self.S*(0.5 + 4))
+                self.mangijad[5].setPos(self.S*(0.5 + 1.5), self.S*(0.5 + 2.5))
+            case 4:
+                self.mangijad[0].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 2))
+                self.mangijad[1].setPos(self.S*(0.5 + 1.5), self.S*(0.5 + 4))
+                self.mangijad[2].setPos(self.S*(0.5 + 3), self.S*(0.5 + 6.5))
+                self.mangijad[3].setPos(self.S*(0.5 + 5), self.S*(0.5 + 7.2))
+                self.mangijad[4].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
+                self.mangijad[5].setPos(self.S*(0.5 + 8), self.S*(0.5 + 3))
+            case 5:
+                self.mangijad[0].setPos(self.S*(0.5 + 7), self.S*(0.5 + 2))
+                self.mangijad[1].setPos(self.S*(0.5 + 1.8), self.S*(0.5 + 5.5))
+                self.mangijad[2].setPos(self.S*(0.5 + 1), self.S*(0.5 + 2))
+                self.mangijad[3].setPos(self.S*(0.5 + 3), self.S*(0.5 + 8))
+                self.mangijad[4].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 6))
+                self.mangijad[5].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
+            case _:
+                pass
+        
         print("Läheb vastuvõtma")
 
 class MainWindow(QMainWindow):
