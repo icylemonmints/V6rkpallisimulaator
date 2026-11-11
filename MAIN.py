@@ -142,9 +142,8 @@ class controls(QWidget):
     edasi = Signal()
     vastuvottu = Signal()
     
-    def __init__(self, valjak):
+    def __init__(self):
         super().__init__()
-        self.valjak = valjak 
 
         self.roteeru = QPushButton("Rotatsioon edasi")
         self.roteeru.clicked.connect(self.edasi)
@@ -165,7 +164,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Võrkpallirotatsioonide simulaator")
 
         self.valjak = RectangleWidget()  
-        self.juhtimine = controls(self.valjak)
+        self.juhtimine = controls()
         self.juhtimine.setFixedWidth(200)
 
         self.juhtimine.edasi.connect(self.valjak.muuda_asetust)
@@ -174,7 +173,7 @@ class MainWindow(QMainWindow):
         näidatavWidget = QWidget()
         layout = QHBoxLayout(näidatavWidget)
         layout.addStretch(1)
-        layout.addWidget(self.valjak,0)
+        layout.addWidget(self.valjak)
         layout.addWidget(self.juhtimine)
         layout.addStretch(1)
         self.setCentralWidget(näidatavWidget)
