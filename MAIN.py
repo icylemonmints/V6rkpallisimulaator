@@ -1,3 +1,8 @@
+"""
+Töö nimi: Võrkpallirotatsioonide simulaator
+Töö tegijad: Maria Alas, Ellen H. Möls
+"""
+
 """Sisaldab MainWindowi, RectangleWidgeti ja Controlsi klasse.
 1) MainWindow aitab näidata ning ühendada RectangleWidgeti ja Controlsi klasse.
 2) RectangleWidget on visualiseeriv osa, millega ise ei saa interakteerida, kuid mis reageerib
@@ -12,9 +17,9 @@ from PySide6.QtWidgets import (
     QWidget, QPushButton
 )
 from PySide6.QtGui import QBrush, QPen, QColor
-from PySide6.QtCore import Qt
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 
+"""koordinaadid mängijate väljakule asetamiseks"""
 asetused = {
     4: (1.5, 2), 3: (4.5, 2), 2: (7.5, 2),
     5: (1.5, 6), 6: (4.5, 6), 1: (7.5, 6)
@@ -127,6 +132,26 @@ class RectangleWidget(QWidget):
         
         print("Läheb vastuvõtma")
 
+"""klass, mis loob akna juhtnuppude näitamiseks.
+juhtnupud on ühendatud signaalidega rectanglewidgetis olevate meetoditega"""
+class controls(QWidget):
+    edasi = Signal()
+    vastuvottu = Signal()
+    def __init__(self, valjak):
+        super().__init__()
+        self.valjak = valjak 
+        layout = QVBoxLayout(self)
+
+        self.roteeru = QPushButton("Rotatsioon edasi")
+        self.roteeru.clicked.connect(self.edasi.emit)
+
+        self.vastuvott = QPushButton("Vastuvõtu asendisse")
+        self.vastuvott.clicked.connect(self.vastuvottu.emit)
+
+        layout.addWidget(self.roteeru)
+        layout.addWidget(self.vastuvott)
+        self.setLayout(layout)
+
 """klass, mis loob akna väljaku ja mängijate widgeti ning juhtnuppude widgeti nägemiseks"""
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -147,26 +172,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.juhtimine)
         layout.addStretch(1)
         self.setCentralWidget(näidatavWidget)
-
-"""klass, mis loob akna juhtnuppude näitamiseks.
-juhtnupud on ühendatud signaalidega rectanglewidgetis olevate meetoditega"""
-class controls(QWidget):
-    edasi = Signal()
-    vastuvottu = Signal()
-    def __init__(self, valjak):
-        super().__init__()
-        self.valjak = valjak 
-        layout = QVBoxLayout(self)
-
-        self.roteeru = QPushButton("Rotatsioon edasi")
-        self.roteeru.clicked.connect(self.edasi.emit)
-
-        self.vastuvott = QPushButton("Vastuvõtu asendisse")
-        self.vastuvott.clicked.connect(self.vastuvottu.emit)
-
-        layout.addWidget(self.roteeru)
-        layout.addWidget(self.vastuvott)
-        self.setLayout(layout)
 
 """põhiprogramm, mis käivitab rakenduse"""
 def main():
