@@ -27,8 +27,8 @@ rollid = ["S", "N", "T", "D", "N", "T"]
 class RectangleWidget(QWidget):
     """Loob akna, kust on näha väljakut ja mängijaid."""
     
-    def __init__(self): # siin meetodis on kõik asjad, mille siia klassi loodud objektid pärivad
-        super().__init__()  # RectangleWidget pärib oma ülemklassi QWidgeti __init__() meetodi
+    def __init__(self):
+        super().__init__()
         self.S = 50
         self.nihe = 0       # näitab, mitu korda on mängijad võrreldes algse asetusega edasi liikunud
         
