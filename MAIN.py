@@ -170,13 +170,13 @@ class MainWindow(QMainWindow):
         self.juhtimine.edasi.connect(self.valjak.muuda_asetust)
         self.juhtimine.vastuvottu.connect(self.valjak.vastuvotu_asendisse)
 
-        näidatavWidget = QWidget()
-        layout = QHBoxLayout(näidatavWidget)
+        näidatav_widget = QWidget()
+        layout = QHBoxLayout(näidatav_widget)
         layout.addStretch(1)
         layout.addWidget(self.valjak)
         layout.addWidget(self.juhtimine)
         layout.addStretch(1)
-        self.setCentralWidget(näidatavWidget)
+        self.setCentralWidget(näidatav_widget)
 
 def main():
     """Põhiprogramm, mis käivitab rakenduse."""
