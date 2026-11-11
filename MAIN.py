@@ -1,4 +1,8 @@
-# See on projekti põhifail.
+"""Sisaldab MainWindowi, RectangleWidgeti ja Controlsi klasse.
+1) MainWindow aitab näidata ning ühendada RectangleWidgeti ja Controlsi klasse.
+2) RectangleWidget on visualiseeriv osa, millega ise ei saa interakteerida, kuid mis reageerib
+   Controlsist saadud signaalidele.
+3) Controls on GUI osa, mis annab võimaluse kasutajal otsida soovitud asetusi."""
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow,
@@ -17,6 +21,8 @@ asetused = {
 }
 rollid = ["S", "N", "T", "D", "N", "T"]
 
+
+"""klass, mis loob akna, kust on näha väljakuid ja mängijaid"""
 class RectangleWidget(QWidget):
     def __init__(self): # siin meetodis on kõik asjad, mille siia klassi loodud objektid pärivad
         super().__init__()  # RectangleWidget pärib oma ülemklassi QWidgeti __init__() meetodi
@@ -121,6 +127,7 @@ class RectangleWidget(QWidget):
         
         print("Läheb vastuvõtma")
 
+"""klass, mis loob akna väljaku ja mängijate widgeti ning juhtnuppude widgeti nägemiseks"""
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -141,6 +148,8 @@ class MainWindow(QMainWindow):
         layout.addStretch(1)
         self.setCentralWidget(näidatavWidget)
 
+"""klass, mis loob akna juhtnuppude näitamiseks.
+juhtnupud on ühendatud signaalidega rectanglewidgetis olevate meetoditega"""
 class controls(QWidget):
     edasi = Signal()
     vastuvottu = Signal()
@@ -159,7 +168,11 @@ class controls(QWidget):
         layout.addWidget(self.vastuvott)
         self.setLayout(layout)
 
-app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
-sys.exit(app.exec())
+"""põhiprogramm, mis käivitab rakenduse"""
+def main():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
+
+if __name__ == "__main__": main()
