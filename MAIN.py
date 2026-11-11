@@ -23,6 +23,10 @@ asetused = {
     5: (1.5, 6), 6: (4.5, 6), 1: (7.5, 6)
 }
 rollid = ["S", "N", "T", "D", "N", "T"]
+# S - sidemängija
+# N - nurgaründaja
+# T - temporündaja
+# D - diagonaalründaja
 
 class RectangleWidget(QWidget):
     """Loob akna, kust on näha väljakut ja mängijaid."""
