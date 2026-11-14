@@ -85,12 +85,19 @@ class RectangleWidget(QWidget):
         self.scene.addItem(ring)
         return ring
 
-    def muuda_asetust(self):
+    def asetus_edasi(self):
         """Mängijad liiguvad platsil ühe koha võrra edasi, kui servija vahetub."""
         self.nihe = (self.nihe+1) % 6       # nihe jääb alati vahemikku 0...5
         for i in range(6):
             x, y = asetused[(i+6-self.nihe)%6+1]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
             self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
+
+    def asetus_tagasi(self):
+            """Mängijad liiguvad platsil ühe koha võrra tagasi."""
+            self.nihe = (self.nihe-1) % 6       # nihe jääb alati vahemikku 0...5
+            for i in range(6):
+                x, y = asetused[(i+6-self.nihe)%6+1]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
+                self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
 
     def vastuvotu_asendisse(self):
         """Mängijad on servi vastu võttes strateegiliselt õigete kohtade peal, samal ajal lähtudes võrkpalli reeglitest."""
@@ -144,19 +151,24 @@ class controls(QWidget):
     Juhtnupud on signaalidega ühendatud RectangleWidget klassis asuvate meetoditega.
     """
     edasi = Signal()
+    tagasi = Signal()
     vastuvottu = Signal()
     
     def __init__(self):
         super().__init__()
 
-        self.roteeru = QPushButton("Rotatsioon edasi")
-        self.roteeru.clicked.connect(self.edasi)
+        self.roteeru_edasi = QPushButton("Rotatsioon edasi")
+        self.roteeru_edasi.clicked.connect(self.edasi)
+
+        self.roteeru_tagasi = QPushButton("Rotatsioon tagasi")
+        self.roteeru_tagasi.clicked.connect(self.tagasi)
 
         self.vastuvott = QPushButton("Vastuvõtu asendisse")
         self.vastuvott.clicked.connect(self.vastuvottu)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.roteeru)
+        layout.addWidget(self.roteeru_edasi)
+        layout.addWidget(self.roteeru_tagasi)
         layout.addWidget(self.vastuvott)
         self.setLayout(layout)
 
@@ -171,7 +183,8 @@ class MainWindow(QMainWindow):
         self.juhtimine = controls()
         self.juhtimine.setFixedWidth(200)
 
-        self.juhtimine.edasi.connect(self.valjak.muuda_asetust)
+        self.juhtimine.edasi.connect(self.valjak.asetus_edasi)
+        self.juhtimine.tagasi.connect(self.valjak.asetus_tagasi)
         self.juhtimine.vastuvottu.connect(self.valjak.vastuvotu_asendisse)
 
         näidatav_widget = QWidget()
