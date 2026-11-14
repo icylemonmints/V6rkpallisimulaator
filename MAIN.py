@@ -82,15 +82,22 @@ class RectangleWidget(QWidget):
         kast = tekst.boundingRect()     # teksti ümber tekib mõtteline ristkülik, muutuja "kast" kirjeldab selle mõõtmeid ja koordinaate ringi suhtes
         tekst.setPos(-kast.width() / 2, -kast.height() / 2)     # seab mõttelise kasti ülemise vasaku nurga koordinaadid nii, et tekst ise jääks ringi keskele
 
+        ring.silt = tekst
         self.scene.addItem(ring)
         return ring
 
     def roteeru(self, suund):
-        """Mängijad liiguvad platsil ühe koha võrra edasi, kui servija vahetub."""
+        """Mängijad liiguvad platsil ühe koha võrra edasi või tagasi."""
         self.nihe = (self.nihe + suund) % 6       # nihe jääb alati vahemikku 0...5
         for i in range(6):
-            x, y = asetused[(i+6-self.nihe)%6+1]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
-            self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)  
+            koht = (i + 6 - self.nihe) % 6 + 1
+            x, y = asetused[koht]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
+            self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
+
+            roll = rollid[i]
+            if roll == "T" and (koht == 5 or koht == 6):
+                roll = "L"
+            self.mangijad[i].silt.setText(roll)
 
     def vastuvotu_asendisse(self):
         """Mängijad on servi vastu võttes strateegiliselt õigete kohtade peal, samal ajal lähtudes võrkpalli reeglitest."""
@@ -137,6 +144,13 @@ class RectangleWidget(QWidget):
                 self.mangijad[3].setPos(self.S*(0.5 + 3), self.S*(0.5 + 8))
                 self.mangijad[4].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 6))
                 self.mangijad[5].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
+        
+        for i in range(6):
+            koht = (i + 6 - self.nihe) % 6 + 1
+            roll = rollid[i]
+            if roll == "T" and koht == 1:
+                roll = "L"
+            self.mangijad[i].silt.setText(roll)
 
 class controls(QWidget):
     """Loob akna juhtnuppude näitamiseks.
