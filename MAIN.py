@@ -85,19 +85,12 @@ class RectangleWidget(QWidget):
         self.scene.addItem(ring)
         return ring
 
-    def asetus_edasi(self):
+    def roteeru(self, suund):
         """Mängijad liiguvad platsil ühe koha võrra edasi, kui servija vahetub."""
-        self.nihe = (self.nihe+1) % 6       # nihe jääb alati vahemikku 0...5
+        self.nihe = (self.nihe + suund) % 6       # nihe jääb alati vahemikku 0...5
         for i in range(6):
             x, y = asetused[(i+6-self.nihe)%6+1]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
-            self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
-
-    def asetus_tagasi(self):
-            """Mängijad liiguvad platsil ühe koha võrra tagasi."""
-            self.nihe = (self.nihe-1) % 6       # nihe jääb alati vahemikku 0...5
-            for i in range(6):
-                x, y = asetused[(i+6-self.nihe)%6+1]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
-                self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
+            self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)  
 
     def vastuvotu_asendisse(self):
         """Mängijad on servi vastu võttes strateegiliselt õigete kohtade peal, samal ajal lähtudes võrkpalli reeglitest."""
@@ -183,8 +176,8 @@ class MainWindow(QMainWindow):
         self.juhtimine = controls()
         self.juhtimine.setFixedWidth(200)
 
-        self.juhtimine.edasi.connect(self.valjak.asetus_edasi)
-        self.juhtimine.tagasi.connect(self.valjak.asetus_tagasi)
+        self.juhtimine.edasi.connect(lambda: self.valjak.roteeru(1))
+        self.juhtimine.tagasi.connect(lambda: self.valjak.roteeru(-1))
         self.juhtimine.vastuvottu.connect(self.valjak.vastuvotu_asendisse)
 
         näidatav_widget = QWidget()
