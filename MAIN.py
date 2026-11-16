@@ -62,7 +62,7 @@ class RectangleWidget(QWidget):
         layout.addWidget(self.view)
         self.setLayout(layout)
         
-    def joonista_mangija(self, silt, positsioon):
+    def joonista_mangija(self, roll, positsioon):
         """Lisab stseeni ringi, mis tähistab mängijat.
 
         Argumendid:
@@ -78,7 +78,7 @@ class RectangleWidget(QWidget):
         ring.setPen(QPen(Qt.PenStyle.NoPen))
         ring.setPos((0.5 + x)*S, (0.5 + y)*S)   # paneb paika mängija (ehk ringi keskpaiga) koordinaadid
 
-        tekst = QGraphicsSimpleTextItem(silt, ring)     # tekst on ringi alamobjekt, seega käib ringiga kaasas
+        tekst = QGraphicsSimpleTextItem(roll, ring)     # tekst on ringi alamobjekt, seega käib ringiga kaasas
         kast = tekst.boundingRect()     # teksti ümber tekib mõtteline ristkülik, muutuja "kast" kirjeldab selle mõõtmeid ja koordinaate ringi suhtes
         tekst.setPos(-kast.width() / 2, -kast.height() / 2)     # seab mõttelise kasti ülemise vasaku nurga koordinaadid nii, et tekst ise jääks ringi keskele
 
@@ -148,7 +148,7 @@ class RectangleWidget(QWidget):
         for i in range(6):
             koht = (i + 6 - self.nihe) % 6 + 1
             roll = rollid[i]
-            if roll == "T" and koht == 1:
+            if roll == "T" and (koht == 1 or koht == 6):
                 roll = "L"
             self.mangijad[i].silt.setText(roll)
 
