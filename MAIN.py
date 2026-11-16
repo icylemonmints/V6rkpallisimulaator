@@ -141,37 +141,7 @@ class RectangleWidget(QWidget):
                 self.mangijad[5].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
     def lõppasetus(self, mangija):
         """Mängijad liiguvad mängimise asukohtadesse"""
-        i = self.mangijad.index(mangija)
-        tsoon = (i + 6 - self.nihe) % 6 + 1
-        eesliin = asetused[tsoon][1] == 2
-        if i == 0:
-            lõppasukoht = (8, 1)
-        elif i == 1:
-            if eesliin:
-                lõppasukoht = (1, 3)
-            else:
-                lõppasukoht = (4.5, 7)
-        elif i == 2:
-            if eesliin:
-                lõppasukoht = (4.5, 3)
-            else:
-                lõppasukoht = (1, 6)
-
-        elif i == 3:
-            lõppasukoht = (8.4, 3)
-
-        elif i == 4:
-            if eesliin:
-                lõppasukoht = (1, 3)
-            else:
-                lõppasukoht = (4.5, 7)
-        elif i == 5:
-            if eesliin:
-                lõppasukoht = (4.5, 3)
-            else:
-                lõppasukoht = (1, 6)
-        return lõppasukoht
-        """
+               
         #sidemängija, samasse kohta
         if mangija == self.mangijad[0]:
             lõppasukoht = (self.S*(0.5 + 8), self.S*(0.5 + 1))
@@ -202,8 +172,9 @@ class RectangleWidget(QWidget):
                 lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 3))
             else:
                 lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 7))
-        """
         return lõppasukoht
+        
+    
     def animatsiooni_näitamine(self):
         self.animatsioonid = QParallelAnimationGroup(self)
         for mangija in self.mangijad:
@@ -211,7 +182,7 @@ class RectangleWidget(QWidget):
             x, y = self.lõppasetus(mangija)
             self.animatsioon.setStartValue(mangija.pos())
             self.animatsioon.setEndValue(QPointF(self.S*(0.5 + x), self.S*(0.5 + y)))
-            self.animatsioon.setDuration(1000)
+            self.animatsioon.setDuration(2000)
             self.animatsioonid.addAnimation(self.animatsioon)
             self.animatsioon.valueChanged.connect(lambda pos, m=mangija: m.setPos(pos))
         self.animatsioonid.start()     

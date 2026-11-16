@@ -19,3 +19,36 @@ nurgad ja tempod sõltub nende positsioonist
 !!!Ei saanud QPRopertyAnimationit kasutada, sest polnud QObjecti property
 vaid sarnaselt kasutatav värk
 midagi midagi ei vastanud kriteeriumitele
+
+"""
+i = self.mangijad.index(mangija)
+        tsoon = (i + 6 - self.nihe) % 6 + 1
+        eesliin = asetused[tsoon][1] == 2
+        if i == 0:
+            lõppasukoht = (8, 1)
+        elif i == 1:
+            if eesliin:
+                lõppasukoht = (1, 3)
+            else:
+                lõppasukoht = (4.5, 7)
+        elif i == 2:
+            if eesliin:
+                lõppasukoht = (4.5, 3)
+            else:
+                lõppasukoht = (1, 6)
+
+        elif i == 3:
+            lõppasukoht = (8.4, 3)
+
+        elif i == 4:
+            if eesliin:
+                lõppasukoht = (1, 3)
+            else:
+                lõppasukoht = (4.5, 7)
+        elif i == 5:
+            if eesliin:
+                lõppasukoht = (4.5, 3)
+            else:
+                lõppasukoht = (1, 6)
+        return lõppasukoht
+"""
