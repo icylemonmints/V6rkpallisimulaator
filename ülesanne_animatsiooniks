@@ -1,0 +1,21 @@
+animatsiooniks on vajalik luua property'd
+
+property on pmst, kui me tahame, et attribute saaks ainult tingimustega muuta
+nt kui tahame, et rakendus teataks, et midagi on muudetud
+või, et muutus saaks olla ainult kindlas vahemikus
+või oleks kättesaadav, aga mitte muudetav
+
+peaks looma koordinaadid attribute'ideks (peaksid juba olema) ning neile looma
+vastavad property'd
+
+pos property on juba eelnevalt olemas, seda muutma ei pea
+maria värk assignib neile koordinaadid, peaksin need start koordinaatideks kuidagi saama
+end koordinaadid võiks asi ise pullida funkti vm-ga
+teen kõigile vastava animatsiooni ja ss stardin järjendi abiga suht samaaegselt?
+
+side läheb alati samasse koordinaati, diago ka
+nurgad ja tempod sõltub nende positsioonist
+
+!!!Ei saanud QPRopertyAnimationit kasutada, sest polnud QObjecti property
+vaid sarnaselt kasutatav värk
+midagi midagi ei vastanud kriteeriumitele

@@ -15,7 +15,9 @@ from PySide6.QtWidgets import (
     QWidget, QPushButton
 )
 from PySide6.QtGui import QBrush, QPen, QColor
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import (
+    QParallelAnimationGroup, QPointF, QVariantAnimation, Qt, Signal, QPointF
+)
 
 # koordinaadid mängijate väljakule asetamiseks
 asetused = {
@@ -56,7 +58,7 @@ class RectangleWidget(QWidget):
         for n in range(1, 7):
             roll = rollid[n-1]
             mangija = self.joonista_mangija(roll, n)
-            self.mangijad.append(mangija)
+            self.mangijad.append(mangija)        
 
         layout = QHBoxLayout()
         layout.addWidget(self.view)
@@ -137,7 +139,83 @@ class RectangleWidget(QWidget):
                 self.mangijad[3].setPos(self.S*(0.5 + 3), self.S*(0.5 + 8))
                 self.mangijad[4].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 6))
                 self.mangijad[5].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
+    def lõppasetus(self, mangija):
+        """Mängijad liiguvad mängimise asukohtadesse"""
+        i = self.mangijad.index(mangija)
+        tsoon = (i + 6 - self.nihe) % 6 + 1
+        eesliin = asetused[tsoon][1] == 2
+        if i == 0:
+            lõppasukoht = (8, 1)
+        elif i == 1:
+            if eesliin:
+                lõppasukoht = (1, 3)
+            else:
+                lõppasukoht = (4.5, 7)
+        elif i == 2:
+            if eesliin:
+                lõppasukoht = (4.5, 3)
+            else:
+                lõppasukoht = (1, 6)
 
+        elif i == 3:
+            lõppasukoht = (8.4, 3)
+
+        elif i == 4:
+            if eesliin:
+                lõppasukoht = (1, 3)
+            else:
+                lõppasukoht = (4.5, 7)
+        elif i == 5:
+            if eesliin:
+                lõppasukoht = (4.5, 3)
+            else:
+                lõppasukoht = (1, 6)
+        return lõppasukoht
+        """
+        #sidemängija, samasse kohta
+        if mangija == self.mangijad[0]:
+            lõppasukoht = (self.S*(0.5 + 8), self.S*(0.5 + 1))
+        #NURK, sõltub ees-/tagaliinist
+        elif mangija == self.mangijad[1]:
+            if asetused[1 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+                lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 3))
+            else:
+                lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 8))
+        #TEMPO, sõltub ees-/tagaliinist
+        elif mangija == self.mangijad[2]:
+            if asetused[2 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+                lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 3))
+            else:
+                lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 7))
+        #DIAGO, umbkaudu samasse kohta mõlemal juhul
+        elif mangija == self.mangijad[3]:
+            lõppasukoht = (self.S*(0.5 + 8.4), self.S*(0.5 + 3))
+        #NURK, sõltub ees-/tagaliinist
+        elif mangija == self.mangijad[4]:
+            if asetused[4 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+                lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 3))
+            else:
+                lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 8))
+        #TEMPO, sõltub ees-/tagaliinist
+        elif mangija == self.mangijad[5]:
+            if asetused[5 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+                lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 3))
+            else:
+                lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 7))
+        """
+        return lõppasukoht
+    def animatsiooni_näitamine(self):
+        self.animatsioonid = QParallelAnimationGroup(self)
+        for mangija in self.mangijad:
+            self.animatsioon = QVariantAnimation(self)
+            x, y = self.lõppasetus(mangija)
+            self.animatsioon.setStartValue(mangija.pos())
+            self.animatsioon.setEndValue(QPointF(self.S*(0.5 + x), self.S*(0.5 + y)))
+            self.animatsioon.setDuration(1000)
+            self.animatsioonid.addAnimation(self.animatsioon)
+            self.animatsioon.valueChanged.connect(lambda pos, m=mangija: m.setPos(pos))
+        self.animatsioonid.start()     
+        
 class controls(QWidget):
     """Loob akna juhtnuppude näitamiseks.
     
@@ -145,6 +223,7 @@ class controls(QWidget):
     """
     edasi = Signal()
     vastuvottu = Signal()
+    animeerimine = Signal()
     
     def __init__(self):
         super().__init__()
@@ -155,9 +234,13 @@ class controls(QWidget):
         self.vastuvott = QPushButton("Vastuvõtu asendisse")
         self.vastuvott.clicked.connect(self.vastuvottu)
 
+        self.animeerimisnupp = QPushButton("Mängi")
+        self.animeerimisnupp.clicked.connect(self.animeerimine.emit)
+
         layout = QVBoxLayout()
         layout.addWidget(self.roteeru)
         layout.addWidget(self.vastuvott)
+        layout.addWidget(self.animeerimisnupp)
         self.setLayout(layout)
 
 class MainWindow(QMainWindow):
@@ -173,7 +256,7 @@ class MainWindow(QMainWindow):
 
         self.juhtimine.edasi.connect(self.valjak.muuda_asetust)
         self.juhtimine.vastuvottu.connect(self.valjak.vastuvotu_asendisse)
-
+        self.juhtimine.animeerimine.connect(self.valjak.animatsiooni_näitamine)
         näidatav_widget = QWidget()
         layout = QHBoxLayout(näidatav_widget)
         layout.addStretch(1)
