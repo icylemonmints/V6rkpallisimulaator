@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QBrush, QPen, QColor
 from PySide6.QtCore import (
-    QParallelAnimationGroup, QPointF, QVariantAnimation, Qt, Signal, QPointF
+    QParallelAnimationGroup, QPointF, QVariantAnimation, Qt, Signal
 )
 
 # koordinaadid mängijate väljakule asetamiseks
@@ -24,6 +24,8 @@ asetused = {
     4: (1.5, 2), 3: (4.5, 2), 2: (7.5, 2),
     5: (1.5, 6), 6: (4.5, 6), 1: (7.5, 6)
 }
+eesliin = [asetused[4], asetused[3], asetused[2]]
+tagaliin = [asetused[5], asetused[6], asetused[1]]
 rollid = ["S", "N", "T", "D", "N", "T"]
 # S - sidemängija
 # N - nurgaründaja
@@ -64,7 +66,7 @@ class RectangleWidget(QWidget):
         layout.addWidget(self.view)
         self.setLayout(layout)
         
-    def joonista_mangija(self, silt, positsioon):
+    def joonista_mangija(self, roll, positsioon):
         """Lisab stseeni ringi, mis tähistab mängijat.
 
         Argumendid:
@@ -80,19 +82,26 @@ class RectangleWidget(QWidget):
         ring.setPen(QPen(Qt.PenStyle.NoPen))
         ring.setPos((0.5 + x)*S, (0.5 + y)*S)   # paneb paika mängija (ehk ringi keskpaiga) koordinaadid
 
-        tekst = QGraphicsSimpleTextItem(silt, ring)     # tekst on ringi alamobjekt, seega käib ringiga kaasas
+        tekst = QGraphicsSimpleTextItem(roll, ring)     # tekst on ringi alamobjekt, seega käib ringiga kaasas
         kast = tekst.boundingRect()     # teksti ümber tekib mõtteline ristkülik, muutuja "kast" kirjeldab selle mõõtmeid ja koordinaate ringi suhtes
         tekst.setPos(-kast.width() / 2, -kast.height() / 2)     # seab mõttelise kasti ülemise vasaku nurga koordinaadid nii, et tekst ise jääks ringi keskele
 
+        ring.silt = tekst
         self.scene.addItem(ring)
         return ring
 
-    def muuda_asetust(self):
-        """Mängijad liiguvad platsil ühe koha võrra edasi, kui servija vahetub."""
-        self.nihe = (self.nihe+1) % 6       # nihe jääb alati vahemikku 0...5
+    def roteeru(self, suund):
+        """Mängijad liiguvad platsil ühe koha võrra edasi või tagasi."""
+        self.nihe = (self.nihe + suund) % 6       # nihe jääb alati vahemikku 0...5
         for i in range(6):
-            x, y = asetused[(i+6-self.nihe)%6+1]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
+            koht = (i + 6 - self.nihe) % 6 + 1
+            x, y = asetused[koht]        # mängija uuteks koordinaatideks saavad talle eelneva tsooni koordinaadid
             self.mangijad[i].setPos((0.5 + x)*self.S, (0.5 + y)*self.S)
+
+            roll = rollid[i]
+            if roll == "T" and (koht == 5 or koht == 6):
+                roll = "L"
+            self.mangijad[i].silt.setText(roll)
 
     def vastuvotu_asendisse(self):
         """Mängijad on servi vastu võttes strateegiliselt õigete kohtade peal, samal ajal lähtudes võrkpalli reeglitest."""
@@ -139,39 +148,47 @@ class RectangleWidget(QWidget):
                 self.mangijad[3].setPos(self.S*(0.5 + 3), self.S*(0.5 + 8))
                 self.mangijad[4].setPos(self.S*(0.5 + 4.5), self.S*(0.5 + 6))
                 self.mangijad[5].setPos(self.S*(0.5 + 7.5), self.S*(0.5 + 6))
+        
+        for i in range(6):
+            koht = (i + 6 - self.nihe) % 6 + 1
+            roll = rollid[i]
+            if roll == "T" and (koht == 1 or koht == 6):
+                roll = "L"
+            self.mangijad[i].silt.setText(roll)
+       
     def lõppasetus(self, mangija):
         """Mängijad liiguvad mängimise asukohtadesse"""
                
         #sidemängija, samasse kohta
         if mangija == self.mangijad[0]:
-            lõppasukoht = (self.S*(0.5 + 8), self.S*(0.5 + 1))
-        #NURK, sõltub ees-/tagaliinist
+            lõppasukoht = (self.S*(0.5 + 6.5), self.S*(0.5 + 1))
+        #ESIMENE NURGARÜNDAJA, sõltub ees-/tagaliinist
         elif mangija == self.mangijad[1]:
-            if asetused[1 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+            if asetused[(1 + self.nihe) % 6 + 1] in eesliin:
                 lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 3))
             else:
-                lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 8))
-        #TEMPO, sõltub ees-/tagaliinist
+                lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 7))
+        #ESIMENE TEMPORÜNDAJA, sõltub ees-/tagaliinist
         elif mangija == self.mangijad[2]:
-            if asetused[2 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+            if asetused[(2 + self.nihe) % 6 + 1] in eesliin:
                 lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 3))
             else:
-                lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 7))
-        #DIAGO, umbkaudu samasse kohta mõlemal juhul
+                lõppasukoht = (self.S*(0.5 + 2), self.S*(0.5 + 6))
+        #DIAGONAALRÜNDAJA, umbkaudu samasse kohta mõlemal juhul
         elif mangija == self.mangijad[3]:
             lõppasukoht = (self.S*(0.5 + 8.4), self.S*(0.5 + 3))
-        #NURK, sõltub ees-/tagaliinist
+        #TEINE NURGARÜNDAJA, sõltub ees-/tagaliinist
         elif mangija == self.mangijad[4]:
-            if asetused[4 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+            if asetused[(4 + self.nihe) % 6 + 1] in eesliin:
                 lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 3))
             else:
                 lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 8))
-        #TEMPO, sõltub ees-/tagaliinist
+        #TEINE TEMPORÜNDAJA, sõltub ees-/tagaliinist
         elif mangija == self.mangijad[5]:
-            if asetused[5 + self.nihe] in [(1.5, 2), (4.5, 2), (7.5, 2)]:
+            if asetused[(5 + self.nihe) % 6 + 1] in eesliin:
                 lõppasukoht = (self.S*(0.5 + 4.5), self.S*(0.5 + 3))
             else:
-                lõppasukoht = (self.S*(0.5 + 1), self.S*(0.5 + 7))
+                lõppasukoht = (self.S*(0.5 + 2), self.S*(0.5 + 5))
         return lõppasukoht
         
     
@@ -181,7 +198,7 @@ class RectangleWidget(QWidget):
             self.animatsioon = QVariantAnimation(self)
             x, y = self.lõppasetus(mangija)
             self.animatsioon.setStartValue(mangija.pos())
-            self.animatsioon.setEndValue(QPointF(self.S*(0.5 + x), self.S*(0.5 + y)))
+            self.animatsioon.setEndValue(QPointF(x, y))
             self.animatsioon.setDuration(2000)
             self.animatsioonid.addAnimation(self.animatsioon)
             self.animatsioon.valueChanged.connect(lambda pos, m=mangija: m.setPos(pos))
@@ -193,14 +210,18 @@ class controls(QWidget):
     Juhtnupud on signaalidega ühendatud RectangleWidget klassis asuvate meetoditega.
     """
     edasi = Signal()
+    tagasi = Signal()
     vastuvottu = Signal()
     animeerimine = Signal()
     
     def __init__(self):
         super().__init__()
 
-        self.roteeru = QPushButton("Rotatsioon edasi")
-        self.roteeru.clicked.connect(self.edasi)
+        self.roteeru_edasi = QPushButton("Rotatsioon edasi")
+        self.roteeru_edasi.clicked.connect(self.edasi)
+
+        self.roteeru_tagasi = QPushButton("Rotatsioon tagasi")
+        self.roteeru_tagasi.clicked.connect(self.tagasi)
 
         self.vastuvott = QPushButton("Vastuvõtu asendisse")
         self.vastuvott.clicked.connect(self.vastuvottu)
@@ -209,7 +230,8 @@ class controls(QWidget):
         self.animeerimisnupp.clicked.connect(self.animeerimine.emit)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.roteeru)
+        layout.addWidget(self.roteeru_edasi)
+        layout.addWidget(self.roteeru_tagasi)
         layout.addWidget(self.vastuvott)
         layout.addWidget(self.animeerimisnupp)
         self.setLayout(layout)
@@ -225,7 +247,8 @@ class MainWindow(QMainWindow):
         self.juhtimine = controls()
         self.juhtimine.setFixedWidth(200)
 
-        self.juhtimine.edasi.connect(self.valjak.muuda_asetust)
+        self.juhtimine.edasi.connect(lambda: self.valjak.roteeru(1))
+        self.juhtimine.tagasi.connect(lambda: self.valjak.roteeru(-1))
         self.juhtimine.vastuvottu.connect(self.valjak.vastuvotu_asendisse)
         self.juhtimine.animeerimine.connect(self.valjak.animatsiooni_näitamine)
         näidatav_widget = QWidget()
